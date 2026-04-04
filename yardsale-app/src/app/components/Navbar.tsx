@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -34,12 +34,20 @@ export default function Navbar() {
                 Logout
               </button>
             ) : (
-              <button
-                onClick={() => signIn("google")}
-                className="bg-black text-white px-4 py-2 rounded-lg"
-              >
-                Login
-              </button>
+              <>
+                <Link
+                  href="/login"
+                  className="hover:text-gray-600 text-gray-800"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-black text-white px-4 py-2 rounded-lg"
+                >
+                  Sign Up
+                </Link>
+              </>
             )}
           </div>
 
@@ -67,9 +75,29 @@ export default function Navbar() {
             Sell
           </Link>
 
-          <button className="w-full bg-black text-white px-4 py-2 rounded-lg">
-            Login
-          </button>
+          {session ? (
+            <button
+              onClick={() => signOut()}
+              className="w-full bg-black text-white px-4 py-2 rounded-lg"
+            >
+              Logout
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <Link
+                href="/login"
+                className="block w-full text-center border px-4 py-2 rounded-lg"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="block w-full text-center bg-black text-white px-4 py-2 rounded-lg"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>

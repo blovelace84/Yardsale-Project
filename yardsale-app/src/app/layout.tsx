@@ -1,4 +1,5 @@
 import "./globals.css";
+import "goey-toast/styles.css";
 import ToastProvider from "@/app/toast-provider";
 import Navbar from "./components/Navbar";
 import { Providers } from "./components/Providers";

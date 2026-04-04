@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { goeyToast as toast } from "goey-toast";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -14,20 +13,28 @@ export default function LoginPage() {
 
     const form = new FormData(e.target as HTMLFormElement);
 
-    const email = form.get("email") as string;
-    const password = form.get("password") as string;
+    const data = {
+      name: form.get("name"),
+      email: form.get("email"),
+      password: form.get("password"),
+    };
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
-    if (res?.error) {
-      toast.error("Invalid credentials");
+    if (!res.ok) {
+      const result = (await res.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      toast.error(result?.error ?? "Could not create account");
     } else {
-      toast.success("Logged in!");
-      window.location.href = "/";
+      toast.success("Account created 🎉");
+      window.location.href = "/login";
     }
 
     setLoading(false);
@@ -36,9 +43,15 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="w-full max-w-sm space-y-4">
-        <h1 className="text-2xl font-bold">Login</h1>
+        <h1 className="text-2xl font-bold">Sign Up</h1>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            name="name"
+            placeholder="Name"
+            className="w-full border p-2 rounded"
+          />
+
           <input
             name="email"
             placeholder="Email"
@@ -55,21 +68,14 @@ export default function LoginPage() {
           />
 
           <button className="w-full bg-black text-white py-2 rounded">
-            {loading ? "Loading..." : "Login"}
+            {loading ? "Creating..." : "Sign Up"}
           </button>
         </form>
 
-        <button
-          onClick={() => signIn("google")}
-          className="w-full border py-2 rounded"
-        >
-          Continue with Google
-        </button>
-
         <p className="text-sm text-center text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-medium text-black underline">
-            Sign up
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-black underline">
+            Log in
           </Link>
         </p>
       </div>

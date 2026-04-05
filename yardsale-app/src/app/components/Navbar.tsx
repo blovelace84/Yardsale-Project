@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -56,12 +56,12 @@ export default function Navbar() {
               </button>
             ) : (
               <>
-                <Link
-                  href="/login"
+                <button
+                  onClick={() => signIn()}
                   className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
                 >
                   Login
-                </Link>
+                </button>
                 <Link
                   href="/signup"
                   className="rounded-full bg-[#1877f2] px-4 py-2 text-sm font-semibold text-white shadow-sm"

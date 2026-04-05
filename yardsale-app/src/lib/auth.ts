@@ -38,14 +38,35 @@ export const authOptions: NextAuthOptions = {
         const isValid = await verifyPassword(credentials.password, user.password);
         if (!isValid) return null;
 
-        const { password, ...safeUser } = user;
-        return safeUser;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
       },
     }),
   ],
 
   session: {
-    strategy: "database",
+    strategy: "jwt",
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.id) {
+        token.sub = user.id;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        session.user.email = session.user.email ?? token.email ?? undefined;
+        session.user.name = session.user.name ?? token.name ?? undefined;
+      }
+
+      return session;
+    },
   },
 
   pages: {

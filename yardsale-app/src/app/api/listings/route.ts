@@ -1,4 +1,6 @@
+import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 // GET all listings
@@ -12,16 +14,39 @@ export async function GET() {
 
 // POST new listing
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await req.json();
+
+  const title = typeof body.title === "string" ? body.title.trim() : "";
+  const description = typeof body.description === "string" ? body.description.trim() : "";
+  const price = Number(body.price);
+
+  if (!title || !description || !Number.isFinite(price)) {
+    return NextResponse.json({ error: "Invalid listing data" }, { status: 400 });
+  }
+
+  const user = await db.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const listing = await db.listing.create({
     data: {
-      title: body.title,
-      description: body.description,
-      price: body.price,
-      userId: body.userId, // temp until auth
+      title,
+      description,
+      price,
+      userId: user.id,
     },
   });
 
-  return NextResponse.json(listing);
+  return NextResponse.json(listing, { status: 201 });
 }

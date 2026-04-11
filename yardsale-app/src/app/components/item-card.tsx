@@ -30,7 +30,7 @@ export default function ItemCard({
   return (
     <Link href={`/listings/${id}`} className="group block h-full">
       <article className="h-full overflow-hidden rounded-2xl border border-slate-200 bg-white/95 shadow-sm ring-1 ring-black/5 transition duration-200 hover:-translate-y-1 hover:shadow-xl">
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
+        <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
           {imageUrl ? (
             <img
               src={imageUrl}
